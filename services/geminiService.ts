@@ -27,7 +27,7 @@ export const generateFortune = async (input: UserInput): Promise<string> => {
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.0-flash',
       contents: prompt,
       config: {
         systemInstruction,
