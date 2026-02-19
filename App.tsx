@@ -1,8 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { UserInput, LoadingState, Direction } from './types';
 import { generateFortune } from './services/geminiService';
-import { getZodiac, formatDate } from './utils';
+import { getZodiac } from './utils';
+
+// Declare html2canvas for TS
+declare const html2canvas: any;
 
 const App: React.FC = () => {
   const [input, setInput] = useState<UserInput>({
@@ -13,6 +16,7 @@ const App: React.FC = () => {
   const [result, setResult] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [showResult, setShowResult] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +34,25 @@ const App: React.FC = () => {
     } catch (err: any) {
       setError(err.message || '由于天象变幻，测算暂时中断。');
       setLoading(LoadingState.ERROR);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!scrollRef.current) return;
+    
+    try {
+      const canvas = await html2canvas(scrollRef.current, {
+        backgroundColor: '#f2e6d5',
+        scale: 2, // Higher quality
+        useCORS: true,
+      });
+      const link = document.createElement('a');
+      link.download = `天机阁-2026丙午流年-${getZodiac(new Date(input.birthday).getFullYear())}属相.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('Failed to save image:', err);
+      alert('保存失败，请尝试截图保存。');
     }
   };
 
@@ -107,7 +130,7 @@ const App: React.FC = () => {
         {/* Result Display */}
         {loading === LoadingState.SUCCESS && (
           <div className={`mt-8 transition-all duration-1000 transform ${showResult ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <div className="bg-[#f2e6d5] text-stone-900 p-1 rounded-sm shadow-inner overflow-hidden">
+            <div ref={scrollRef} className="bg-[#f2e6d5] text-stone-900 p-1 rounded-sm shadow-inner overflow-hidden capture-area">
               <div className="border-4 border-double border-red-900/20 m-1 p-6 relative">
                 {/* Scroll Decoration */}
                 <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-b from-stone-400/20 to-transparent"></div>
@@ -137,15 +160,23 @@ const App: React.FC = () => {
               </div>
             </div>
             
-            <button 
-              onClick={() => {
-                setLoading(LoadingState.IDLE);
-                setResult('');
-              }}
-              className="mt-6 w-full text-amber-500/60 hover:text-amber-500 text-sm tracking-widest transition-colors uppercase"
-            >
-              [ 阖扉再占 ]
-            </button>
+            <div className="grid grid-cols-2 gap-4 mt-6">
+              <button 
+                onClick={handleDownload}
+                className="bg-amber-900/20 hover:bg-amber-900/40 text-amber-500 border border-amber-900/40 py-3 text-sm tracking-widest transition-all uppercase font-medium"
+              >
+                [ 珍藏天机 ]
+              </button>
+              <button 
+                onClick={() => {
+                  setLoading(LoadingState.IDLE);
+                  setResult('');
+                }}
+                className="bg-stone-800/20 hover:bg-stone-800/40 text-stone-400 border border-stone-800/40 py-3 text-sm tracking-widest transition-all uppercase font-medium"
+              >
+                [ 阖扉再占 ]
+              </button>
+            </div>
           </div>
         )}
       </main>

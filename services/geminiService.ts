@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import { UserInput } from "../types";
 
 export const generateFortune = async (input: UserInput): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const systemInstruction = `你是一位精通中国传统命理的风水大师，专研生肖流年运势。
 语言庄重典雅、富有仪式感，善用"此乃……之象""紫气东来""五行相生"等命理术语。
@@ -27,7 +27,7 @@ export const generateFortune = async (input: UserInput): Promise<string> => {
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
         systemInstruction,

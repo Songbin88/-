@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>天机阁 · 丙午流年测算</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
     <style>
         body {
@@ -32,6 +33,10 @@
             opacity: 0.1;
             animation: drift 20s ease-in-out infinite alternate;
         }
+        /* Style for printing/capturing */
+        .capture-area {
+            background-color: #f2e6d5 !important;
+        }
     </style>
 <script type="importmap">
 {
@@ -46,6 +51,5 @@
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
 </body>
 </html>
